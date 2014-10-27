@@ -35,7 +35,7 @@ function deleteList(name) {
 // recursively descend through the container tree and identify all grocery lists
 // adding them to the context array (InventoryManger['groceryLists']) and adding listeners
 // for their new children or removed children. Add any found container to context array (InventoryManger['all'])
-function recurseContainers(ref, obj) {
+function recurseContainers(ref, obj,resourceName,compType) {
   ref.once('value', function(v) {
     var listObj = {
       id: ref.name(),
@@ -43,12 +43,12 @@ function recurseContainers(ref, obj) {
       description: v.val()['description']
     };
 
-    if(v.val()['compType'] && v.val()['compType'] == "grocery") {
+    if(v.val()['compType'] && v.val()['compType'] == compType) {
 
-      obj['groceryLists'].push(listObj);
+      obj[resourceName].push(listObj);
 
       // if this is our first list, make it the active one
-      if(obj['groceryLists'].length == 1) {
+      if(obj[resourceName].length == 1) {
         displayGroceryList(listObj.id, true);
       }
       else

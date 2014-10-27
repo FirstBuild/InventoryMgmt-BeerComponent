@@ -5,7 +5,7 @@
 
 // create a namespace for our globals
 var InventoryManager = {
-  appURI: "https://flickering-fire-3648.firebaseio.com/"
+  appURI: "https://1buildbeerbeta.firebaseio.com/"
 };
 
 function initAuth(ref, callback) {
@@ -244,7 +244,29 @@ $(document).ready(function() {
   // when authorized, get users grocery list
   InventoryManager['auth'] = initAuth(InventoryManager['imRef'], function() {
     // we must be authorized first and then we can get the users grocery lists
-    getUserLists();
+    // getUserLists();
+    var organizations = getOrganizations(function(data){
+      console.log("ORGS",data);
+
+      if(data){
+        //find fridges for each org
+        $.each(data,function(index,val){
+          getFridges(val,function(fridgeData){
+            console.log("FRIDGES",fridgeData);
+            //find objects for each fridge
+            $.each(fridgeData,function(i,v){
+              getBeersFromFridge(v,function(beersData){
+                console.log("BEERS",beersData);
+              })
+            })
+          });
+        })
+      }
+    });
+
+    
+    // 
+    // getBeersFromFridge();
   });
 
 });
