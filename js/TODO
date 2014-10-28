@@ -1,0 +1,11 @@
+//TODO
+// send OK or Not to Arduino to get a beer
+// write a fct to add a 'milk object'
+// write a fct to update the milk object (weight,...) -> make generic
+
+
+// Chillhub
+// download schemas from Firebase
+// schemas
+//  + beerminder -> "status,count,..."
+// add to chillhub to download the schema and give a value for Arduino, 0 to 15

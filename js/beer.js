@@ -50,5 +50,75 @@ function getBeersFromFridge(fridgeID,callback){
   	callback(this);
   }, objects);
 
+  //FIXME add a child_remove trigger
+
   return true;
+}
+
+//consume a beer
+function consumeBeer(beerId){
+	var rootRef = InventoryManager['imRef'].child('objects').child(beerId)
+	rootRef.update({
+		"consumed":true,
+		"consumer":InventoryManager['uid']
+	});
+
+	rootRef.once('value', function(snap) {
+	  // store dataSnapshot for use in below examples.
+	  // fredSnapshot = dataSnapshot;
+	  console.log(snap.val());
+	  removeFromFridge(snap.val().container,snap.val().spot)
+	});
+	addBeerToUserConsumedList(InventoryManager['uid'],beerId);
+}
+
+//remove object from Fridge
+function removeFromFridge(fridgeId,spot){
+	//get beerid from spot, and remove rel to container in beer obj
+	var beerRefInFridge = InventoryManager['imRef'].child('containers').child(fridgeId).child('objects').child(spot)
+	beerRefInFridge.once('value',function(snap){
+		var beerRef = InventoryManager['imRef'].child('objects').child(snap.val())
+		beerRef.update({
+			"container":""
+		})
+	});
+
+	var rootRef = InventoryManager['imRef'].child('containers').child(fridgeId).child('objects').child(spot)
+	rootRef.remove()
+
+	var fridge = InventoryManager['imRef'].child('containers').child(fridgeId)
+	fridge.once('value', function(snap) {
+	  console.log(snap.val());
+	});
+}
+
+//add object to Fridge
+function addToFridge(fridgeId,spot,beerId){
+	var rootRef = InventoryManager['imRef'].child('containers').child(fridgeId).child('objects').child(spot)
+	rootRef.set(beerId)
+
+	var fridge = InventoryManager['imRef'].child('containers').child(fridgeId)
+	fridge.once('value', function(snap) {
+	  console.log(snap.val());
+	});
+}
+
+//Find the consumedList of an user
+function getConsumedListOfUser(userId,callback){
+	// userId -> RootContainer -> ConsumedList 
+	var rootRef = InventoryManager['imRef'].child('containers').child(InventoryManager['rootContainer']).child('children')
+	rootRef.on('child_added',function(v){
+		var listRef = InventoryManager['imRef'].child('containers').child(v.name())
+		listRef.once('value',function(snap){
+			if(snap.val().compType == "consumedList"){
+				callback(snap.name())
+			}
+		})
+
+	})
+}
+
+// add a beer to consumedList
+function addBeerToUserConsumedList(consumedListId,beerId){
+
 }

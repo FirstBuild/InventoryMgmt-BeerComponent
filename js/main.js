@@ -264,6 +264,18 @@ $(document).ready(function() {
       }
     });
 
+    //Load Schemas
+    var schemas = loadSchemas(function(data){
+      console.log("SCHEMAS",data);
+      if(data){
+        $.each(data,function(index,val){
+          getSchema(val,function(schemaData){
+            console.log("SCHEMA "+val,schemaData);
+          })
+        })
+      }
+    })
+
     
     // 
     // getBeersFromFridge();
